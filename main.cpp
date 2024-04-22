@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <math.h>
 #include <iostream>
-#define N 2000
+#define N 10000
 #include <omp.h>
 
 
 
-const int num_threads = 4;
+const int num_threads = 8;
 const int iXmax = N;
 const int iYmax = N;
 
@@ -24,61 +24,6 @@ const int MaxColorComponentValue=255;
 
 
 unsigned char color[iYmax][iXmax][3];
-
-
-//void call_from_thread(int tid)
-//{
-//    std::cout << "Launched by thread " << tid << std::endl;
-//    int i, j, k;
-//    int iX,iY;
-//    int Iteration;
-//    double Cx,Cy;
-//    double Zx, Zy;
-//    double Zx2, Zy2;
-//    int paczka = N / num_threads;
-//    int lb = tid * paczka;
-//    int ub = lb + paczka - 1;
-//
-//    for(iY=lb;iY<ub;iY++) // Zrównoleglić
-//    {
-//        Cy=CyMin + iY*PixelHeight;
-//        if (fabs(Cy)< PixelHeight/2) Cy=0.0; /* Main antenna */
-//        for(iX=0;iX<iXmax;iX++)
-//        {
-//            Cx=CxMin + iX*PixelWidth;
-//            /* initial value of orbit = critical point Z= 0 */
-//            Zx=0.0;
-//            Zy=0.0;
-//            Zx2=Zx*Zx;
-//            Zy2=Zy*Zy;
-//            /* */
-//            for (Iteration=0;Iteration<IterationMax && ((Zx2+Zy2)<ER2);Iteration++)
-//            {
-//                Zy=2*Zx*Zy + Cy;
-//                Zx=Zx2-Zy2 +Cx;
-//                Zx2=Zx*Zx;
-//                Zy2=Zy*Zy;
-//            };
-//            /* compute  pixel color (24 bit = 3 bytes) */
-//            sumy[tid] += Iteration;
-//            if (Iteration==IterationMax)
-//            { /*  interior of Mandelbrot set = black */
-//                color[iY][iX][0]=0;
-//                color[iY][iX][1]=0;
-//                color[iY][iX][2]=0;
-//            }
-//            else
-//            { /* exterior of Mandelbrot set = white. Pokolorowanie tła według wątka */
-//                color[iY][iX][0]=80*tid; /* Red*/
-//                color[iY][iX][1]=80*tid;  /* Green */
-//                color[iY][iX][2]=80*tid;/* Blue */
-//            };
-//            /*write color to the file*/
-//            // Zapis do pliku w pętli
-//        }
-//    }
-//
-//}
 
 
 int main()
@@ -109,7 +54,7 @@ int main()
     {
         id = omp_get_thread_num();
         std::cout << id << std::endl;
-#pragma omp for private(iX, iY, Cx, Cy, Zx, Zy, Zx2, Zy2, Iteration) schedule(static, 1) // Liczba iteracji wątków
+#pragma omp for private(iX, iY, Cx, Cy, Zx, Zy, Zx2, Zy2, Iteration) schedule(static) // Liczba iteracji wątków
 
         for(iY=0;iY<iYmax;iY++) // Zrównoleglić
         {
@@ -140,8 +85,8 @@ int main()
                 }
                 else
                 { /* exterior of Mandelbrot set = white. Pokolorowanie tła według wątka */
-                    color[iY][iX][0]=80*id; /* Red*/
-                    color[iY][iX][1]=80*id;  /* Green */
+                    color[iY][iX][0]=32*id; /* Red*/
+                    color[iY][iX][1]=32*id;  /* Green */
                     color[iY][iX][2]=255;/* Blue */
                 };
                 /*write color to the file*/
